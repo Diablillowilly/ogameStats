@@ -4,7 +4,7 @@ import requests
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
-
+import os
 
 
 def loadConfig():
@@ -32,6 +32,21 @@ def loadConfig():
 
 
 config = loadConfig()
+
+
+def createDir(dirPath):
+    try:
+        os.mkdir(dirPath)
+    except OSError as e:
+        print(e.errno)
+        print(e.filename)
+        print(e.strerror)
+        return False
+    else:
+        return True
+
+def dirOrFileExists(dirPath):
+    return os.path.exists(dirPath)
 
 def loadRegister():
     registerFilePath = "html/register.json"

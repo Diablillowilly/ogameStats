@@ -19,10 +19,10 @@ def loadConfig():
             "reportFilesPath":"html/data/reports/"
         }
         configFile = open(configFilePath, "w")
-        configFile.write(json.dumps(sampleConfig, indent=4))
+        configFile.write(json.dumps(sampleConfig, indent=2))
         configFile.close()
         print("config did not exist, so a sample config was created, please configure it")
-        print(json.dumps(sampleConfig, indent=4))
+        print(json.dumps(sampleConfig, indent=2))
         exit(0)
     else:
         configFile = open(configFilePath, "r")

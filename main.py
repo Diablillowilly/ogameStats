@@ -16,7 +16,8 @@ def loadConfig():
             "server":"1",
             "language":"en",
             "registerFilePath":"html/data/register.json",
-            "reportFilesPath":"html/data/reports/"
+            "reportFilesPath":"html/data/reports/",
+            "dataPath":"html/data/"
         }
         configFile = open(configFilePath, "w")
         configFile.write(json.dumps(sampleConfig, indent=2))
@@ -110,8 +111,18 @@ def getPlayersNames(playersXML): # players xml string
 
 #START
 
-
 config = loadConfig()
+
+#create necessary directories
+if(not dirOrFileExists(config["dataPath"])):
+    if(createDir(config["dataPath"]) == False):
+        exit(0)
+
+if(not dirOrFileExists(config["reportFilesPath"])):
+    if(createDir(config["reportFilesPath"]) == False):
+        exit(0)
+
+
 registerFile = loadRegister()
 
 req_get_alliance = requests.get("https://s{}-{}.ogame.gameforge.com/api/alliances.xml".format(config["server"], config["language"]))

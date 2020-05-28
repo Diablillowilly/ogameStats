@@ -1,22 +1,22 @@
 console.log("test")
 var configPath = "/config.json"
 
-function drawTable(firstMostRecentReportDate, secondMostRecentReportDate){
+function drawTable(firstMostRecentReportDate, previousWeekReportDate){
   var fullFinishedScores = {}
   fullFinishedScores["firstMostRecentReportDate"] = firstMostRecentReportDate["timestamp"];
-  fullFinishedScores["secondMostRecentReportDate"] = secondMostRecentReportDate["timestamp"];
+  fullFinishedScores["previousWeekReportDate"] = previousWeekReportDate["timestamp"];
   fullFinishedScores["scores"] = []
   for (const player in firstMostRecentReportDate["scores"]) {
     var playerData = {}
     var firstMostRecentReportDate_player = firstMostRecentReportDate["scores"][player]
-    var secondMostRecentReportDate_player = secondMostRecentReportDate["scores"][player]
+    var previousWeekReportDate_player = previousWeekReportDate["scores"][player]
     playerData["name"] = firstMostRecentReportDate_player.name
     playerData["firstMostRecentReportDate_position"] = firstMostRecentReportDate_player.position
-    playerData["secondMostRecentReportDate_position"] = secondMostRecentReportDate_player.position
+    playerData["previousWeekReportDate_position"] = previousWeekReportDate_player.position
     playerData["firstMostRecentReportDate_score"] = firstMostRecentReportDate_player.score
-    playerData["secondMostRecentReportDate_score"] = secondMostRecentReportDate_player.score
-    playerData["score_points_delta"] = parseInt(firstMostRecentReportDate_player.score) - parseInt(secondMostRecentReportDate_player.score)
-    playerData["score_percentage_delta"] = Math.round((playerData["score_points_delta"] / parseInt(secondMostRecentReportDate_player.score)) * 100)
+    playerData["previousWeekReportDate_score"] = previousWeekReportDate_player.score
+    playerData["score_points_delta"] = parseInt(firstMostRecentReportDate_player.score) - parseInt(previousWeekReportDate_player.score)
+    playerData["score_percentage_delta"] = Math.round((playerData["score_points_delta"] / parseInt(previousWeekReportDate_player.score)) * 100)
     fullFinishedScores["scores"].push(playerData)
 
   }
@@ -39,11 +39,11 @@ function drawTable(firstMostRecentReportDate, secondMostRecentReportDate){
     }, {
       "data": "firstMostRecentReportDate_position"
     }, {
-      "data": "secondMostRecentReportDate_position"
+      "data": "previousWeekReportDate_position"
     }, {
       "data": "firstMostRecentReportDate_score"
     }, {
-      "data": "secondMostRecentReportDate_score"
+      "data": "previousWeekReportDate_score"
     }, {
       "data": "score_points_delta"
     }, {
@@ -86,22 +86,22 @@ function drawTable(firstMostRecentReportDate, secondMostRecentReportDate){
 
 
 }
-function getReports(config, firstMostRecentReportDate, secondMostRecentReportDate){
+function getReports(config, firstMostRecentReportDate, previousWeekReportDate){
   var req_get_firstMostRecentReportDate = new XMLHttpRequest();
   req_get_firstMostRecentReportDate.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var firstMostRecentReportJson = JSON.parse(req_get_firstMostRecentReportDate.responseText);
       console.log(firstMostRecentReportJson);
-      var req_get_secondMostRecentReportDate = new XMLHttpRequest();
-      req_get_secondMostRecentReportDate.onreadystatechange = function() {
+      var req_get_previousWeekReportDate = new XMLHttpRequest();
+      req_get_previousWeekReportDate.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          var secondMostRecentReportJson = JSON.parse(req_get_secondMostRecentReportDate.responseText);
-          console.log(secondMostRecentReportJson);
-          drawTable(firstMostRecentReportJson, secondMostRecentReportJson);
+          var previousWeekReportJson = JSON.parse(req_get_previousWeekReportDate.responseText);
+          console.log(previousWeekReportJson);
+          drawTable(firstMostRecentReportJson, previousWeekReportJson);
         }
       };
-      req_get_secondMostRecentReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + secondMostRecentReportDate + ".json", true);
-      req_get_secondMostRecentReportDate.send();
+      req_get_previousWeekReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + previousWeekReportDate + ".json", true);
+      req_get_previousWeekReportDate.send();
     }
   };
   req_get_firstMostRecentReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + firstMostRecentReportDate + ".json", true);
@@ -121,13 +121,13 @@ window.onload = function(){
           var responseJson = JSON.parse(req_get_register.responseText);
           console.log(responseJson)
           var firstMostRecentReportStr = responseJson["times"][responseJson["times"].length - 1];
-          var secondMostRecentReportStr = responseJson["times"][responseJson["times"].length - 2];
+          var previousWeekReportStr = responseJson["times"][responseJson["times"].length - 2];
           var firstMostRecentReportDate = new Date(responseJson["times"][responseJson["times"].length - 1] * 1000);
-          var secondMostRecentReportDate = new Date(responseJson["times"][responseJson["times"].length - 2] * 1000);
+          var previousWeekReportDate = new Date(responseJson["times"][responseJson["times"].length - 2] * 1000);
           document.getElementById("firstMostRecentReportDate").textContent = firstMostRecentReportDate;
-          document.getElementById("secondMostRecentReportDate").textContent = secondMostRecentReportDate;
+          document.getElementById("previousWeekReportDate").textContent = previousWeekReportDate;
 
-          getReports(config, firstMostRecentReportStr, secondMostRecentReportStr);
+          getReports(config, firstMostRecentReportStr, previousWeekReportStr);
         }
       };
       req_get_register.open("GET","/" + config["dataPath"] + config["registerFilePath"], true);

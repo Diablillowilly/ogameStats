@@ -5,20 +5,40 @@ import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-#prob executed from cron
 
-f = open("config.json", "r")
-fileConfig = f.read()
-f.close()
-print(fileConfig)
-config = json.loads(fileConfig)
+
+def loadConfig():
+    configFilePath = "html/config.json"
+    configFile = Path(configFilePath)
+    if(configFile.is_file() == False):
+        sampleConfig = {
+            "alliance":"1",
+            "server":"1",
+            "language":"en",
+            "registerFilePath":"html/data/register.json",
+            "reportFilesPath":"html/data/reports/"
+        }
+        configFile = open(configFilePath, "w")
+        configFile.write(json.dumps(sampleConfig, indent=4))
+        configFile.close()
+        print("config did not exist, so a sample config was created, please configure it")
+        print(json.dumps(sampleConfig, indent=4))
+        exit(0)
+    else:
+        configFile = open(configFilePath, "r")
+        configFileContent = configFile.read()
+        configFile.close()
+        return json.loads(configFileContent)
+
+
+config = loadConfig()
 
 register_file = Path(config["registerFilePath"])
 if(register_file.is_file() == False):
     sampleRegister = {}
     sampleRegister["times"] = []
     register_file = open(config["registerFilePath"], "w")
-    register_file.write(json.dumps(sampleRegister, indent=4))
+    register_file.write(json.dumps(sampleRegister, indent=2))
     register_file.close()
 
 def getPlayersFromAlliance(allianceXML, allianceID): # alliances xml string, and alliance id
@@ -94,10 +114,10 @@ for playerID in players:
 
 
 #store the data
-register_file = open(config["registerFilePath"], "r")
-register_file = register_file.read()
-f.close()
-register = json.loads(register_file)
+registerFile = open(config["registerFilePath"], "r")
+registerFileContent = registerFile.read()
+registerFile.close()
+register = json.loads(registerFileContent)
 
 #if time does not exist add it
 timeAlreadyExists = False
@@ -108,9 +128,9 @@ for time in register["times"]:
 if(timeAlreadyExists == False):
     register["times"].append(alliancePlayers["timestamp"])
 
-register_file = open(config["registerFilePath"], "w")
-register_file.write(json.dumps(register, indent=2))
-register_file.close()
+registerFile = open(config["registerFilePath"], "w")
+registerFile.write(json.dumps(register, indent=2))
+registerFile.close()
 
 
 alliancePlayersReportFileName = config["reportFilesPath"] + alliancePlayers["timestamp"] + ".json"

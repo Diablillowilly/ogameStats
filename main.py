@@ -178,3 +178,5 @@ alliancePlayersReportFileName = config["webPath"] + config["reportFilesPath"] + 
 f = open(alliancePlayersReportFileName, "w")
 f.write(json.dumps(alliancePlayers, indent=2))
 f.close()
+
+print("done!")

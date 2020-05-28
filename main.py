@@ -21,7 +21,7 @@ def loadConfig():
         configFile = open(configFilePath, "w")
         configFile.write(json.dumps(sampleConfig, indent=2))
         configFile.close()
-        print("config did not exist, so a sample config was created, please configure it")
+        print("config file did not exist, so a sample config was created, please configure it")
         print(json.dumps(sampleConfig, indent=2))
         exit(0)
     else:
@@ -33,13 +33,26 @@ def loadConfig():
 
 config = loadConfig()
 
-register_file = Path(config["registerFilePath"])
-if(register_file.is_file() == False):
-    sampleRegister = {}
-    sampleRegister["times"] = []
-    register_file = open(config["registerFilePath"], "w")
-    register_file.write(json.dumps(sampleRegister, indent=2))
-    register_file.close()
+def loadRegister():
+    registerFilePath = "html/register.json"
+    registerFile = Path(config["registerFilePath"])
+    if(registerFile.is_file() == False):
+        sampleRegister = {}
+        sampleRegister["times"] = []
+        registerFile = open(config["registerFilePath"], "w")
+        registerFile.write(json.dumps(sampleRegister, indent=2))
+        registerFile.close()
+        print("register file did not exist, created")
+        return sampleRegister
+    else:
+        registerFile = open(config["registerFilePath"], "r")
+        registerFileContent = registerFile.read()
+        registerFile.close()
+        return json.loads(registerFileContent)
+
+
+registerFile = loadRegister()
+
 
 def getPlayersFromAlliance(allianceXML, allianceID): # alliances xml string, and alliance id
     allianceXML_parsed = ET.fromstring(allianceXML)

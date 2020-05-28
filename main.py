@@ -15,8 +15,8 @@ def loadConfig():
             "alliance":"1",
             "server":"1",
             "language":"en",
-            "registerFilePath":"data/register.json",
-            "reportFilesPath":"data/reports/",
+            "registerFilePath":"register.json",
+            "reportFilesPath":"reports/",
             "dataPath":"data/",
             "webPath":"html/"
         }
@@ -51,17 +51,17 @@ def dirOrFileExists(dirPath):
     return os.path.exists(dirPath)
 
 def loadRegister():
-    registerFile = Path(config["webPath"] + config["registerFilePath"])
+    registerFile = Path(config["webPath"] + config["dataPath"] + config["registerFilePath"])
     if(registerFile.is_file() == False):
         sampleRegister = {}
         sampleRegister["times"] = []
-        registerFile = open(config["webPath"] + config["registerFilePath"], "w")
+        registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "w")
         registerFile.write(json.dumps(sampleRegister, indent=2))
         registerFile.close()
         print("register file did not exist, created")
         return sampleRegister
     else:
-        registerFile = open(config["webPath"] + config["registerFilePath"], "r")
+        registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "r")
         registerFileContent = registerFile.read()
         registerFile.close()
         return json.loads(registerFileContent)
@@ -119,8 +119,8 @@ if(not dirOrFileExists(config["webPath"] + config["dataPath"])):
     if(createDir(config["webPath"] + config["dataPath"]) == False):
         exit(0)
 
-if(not dirOrFileExists(config["webPath"] + config["reportFilesPath"])):
-    if(createDir(config["webPath"] + config["reportFilesPath"]) == False):
+if(not dirOrFileExists(config["webPath"] + config["dataPath"] + config["reportFilesPath"])):
+    if(createDir(config["webPath"] + config["dataPath"] + config["reportFilesPath"]) == False):
         exit(0)
 
 
@@ -155,7 +155,7 @@ for playerID in players:
 
 
 #store the data
-registerFile = open(config["webPath"] + config["registerFilePath"], "r")
+registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "r")
 registerFileContent = registerFile.read()
 registerFile.close()
 register = json.loads(registerFileContent)
@@ -169,12 +169,12 @@ for time in register["times"]:
 if(timeAlreadyExists == False):
     register["times"].append(alliancePlayers["timestamp"])
 
-registerFile = open(config["webPath"] + config["registerFilePath"], "w")
+registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "w")
 registerFile.write(json.dumps(register, indent=2))
 registerFile.close()
 
 
-alliancePlayersReportFileName = config["webPath"] + config["reportFilesPath"] + alliancePlayers["timestamp"] + ".json"
+alliancePlayersReportFileName = config["webPath"] + config["dataPath"] + config["reportFilesPath"] + alliancePlayers["timestamp"] + ".json"
 f = open(alliancePlayersReportFileName, "w")
 f.write(json.dumps(alliancePlayers, indent=2))
 f.close()

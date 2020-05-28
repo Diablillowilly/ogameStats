@@ -100,11 +100,11 @@ function getReports(config, firstMostRecentReportDate, secondMostRecentReportDat
           drawTable(firstMostRecentReportJson, secondMostRecentReportJson);
         }
       };
-      req_get_secondMostRecentReportDate.open("GET", "/" + config["reportFilesPath"] + secondMostRecentReportDate + ".json", true);
+      req_get_secondMostRecentReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + secondMostRecentReportDate + ".json", true);
       req_get_secondMostRecentReportDate.send();
     }
   };
-  req_get_firstMostRecentReportDate.open("GET", "/" + config["reportFilesPath"] + firstMostRecentReportDate + ".json", true);
+  req_get_firstMostRecentReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + firstMostRecentReportDate + ".json", true);
   req_get_firstMostRecentReportDate.send();
 }
 window.onload = function(){
@@ -130,7 +130,7 @@ window.onload = function(){
           getReports(config, firstMostRecentReportStr, secondMostRecentReportStr);
         }
       };
-      req_get_register.open("GET","/" + config["registerFilePath"], true);
+      req_get_register.open("GET","/" + config["dataPath"] + config["registerFilePath"], true);
       req_get_register.send();
     }
   };

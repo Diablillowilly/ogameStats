@@ -31,7 +31,6 @@ def loadConfig():
         return json.loads(configFileContent)
 
 
-config = loadConfig()
 
 
 def createDir(dirPath):
@@ -65,8 +64,6 @@ def loadRegister():
         registerFile.close()
         return json.loads(registerFileContent)
 
-
-registerFile = loadRegister()
 
 
 def getPlayersFromAlliance(allianceXML, allianceID): # alliances xml string, and alliance id
@@ -112,6 +109,10 @@ def getPlayersNames(playersXML): # players xml string
 
 
 #START
+
+
+config = loadConfig()
+registerFile = loadRegister()
 
 req_get_alliance = requests.get("https://s{}-{}.ogame.gameforge.com/api/alliances.xml".format(config["server"], config["language"]))
 

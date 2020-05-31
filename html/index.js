@@ -1,136 +1,209 @@
 console.log("test")
 var configPath = "/config.json"
+var config;
+var reports;
+var scoresTable = undefined;
 
-function drawTable(firstMostRecentReportDate, previousWeekReportDate){
-  var fullFinishedScores = {}
-  fullFinishedScores["firstMostRecentReportDate"] = firstMostRecentReportDate["timestamp"];
-  fullFinishedScores["previousWeekReportDate"] = previousWeekReportDate["timestamp"];
+function showReportsLoading() {
+
+}
+
+function showReportsLoaded() {
+
+}
+
+function drawTable(firstReportDate, secondReportDate) {
+  console.log("drawTable")
+  console.log(firstReportDate)
+  console.log(secondReportDate)
+  var fullFinishedScores = {};
+  fullFinishedScores["firstReportDate"] = firstReportDate["timestamp"];
+  fullFinishedScores["secondReportDate"] = secondReportDate["timestamp"];
   fullFinishedScores["scores"] = []
-  for (const player in firstMostRecentReportDate["scores"]) {
+  for (const player in firstReportDate["players"]) {
     var playerData = {}
-    var firstMostRecentReportDate_player = firstMostRecentReportDate["scores"][player]
-    var previousWeekReportDate_player = previousWeekReportDate["scores"][player]
-    playerData["name"] = firstMostRecentReportDate_player.name
-    playerData["firstMostRecentReportDate_position"] = firstMostRecentReportDate_player.position
-    playerData["previousWeekReportDate_position"] = previousWeekReportDate_player.position
-    playerData["firstMostRecentReportDate_score"] = firstMostRecentReportDate_player.score
-    playerData["previousWeekReportDate_score"] = previousWeekReportDate_player.score
-    playerData["score_points_delta"] = parseInt(firstMostRecentReportDate_player.score) - parseInt(previousWeekReportDate_player.score)
-    playerData["score_percentage_delta"] = Math.round((playerData["score_points_delta"] / parseInt(previousWeekReportDate_player.score)) * 100)
+    var firstReportDate_player = firstReportDate["players"][player]
+    var secondReportDate_player = secondReportDate["players"][player]
+    console.log("playerData")
+    console.log(firstReportDate_player)
+    console.log(secondReportDate_player)
+    playerData["name"] = firstReportDate_player.name
+    playerData["firstReportDate_position"] = firstReportDate_player.position
+    playerData["secondReportDate_position"] = secondReportDate_player.position
+    playerData["firstReportDate_score"] = firstReportDate_player.score
+    playerData["secondReportDate_score"] = secondReportDate_player.score
+    playerData["score_points_delta"] = parseInt(secondReportDate_player.score) - parseInt(firstReportDate_player.score)
+    playerData["score_percentage_delta"] = Math.round((playerData["score_points_delta"] / parseInt(firstReportDate_player.score)) * 100)
     fullFinishedScores["scores"].push(playerData)
 
   }
   console.log(fullFinishedScores)
 
   var tableID = "#scoresTable";
-  var scoresTable = $(tableID).DataTable({
-    "data": fullFinishedScores["scores"],
-    autoWidth: false,
-    searching: true,
-    stateSave: true,
-    "pageLength": 25,
-    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-    "order": [
-      [5, "desc"]
-    ],
-    "columns": [
-    {
-      "data": "name"
-    }, {
-      "data": "firstMostRecentReportDate_position"
-    }, {
-      "data": "previousWeekReportDate_position"
-    }, {
-      "data": "firstMostRecentReportDate_score"
-    }, {
-      "data": "previousWeekReportDate_score"
-    }, {
-      "data": "score_points_delta"
-    }, {
-      "data": "score_percentage_delta"
-    }],
-    columnDefs: [
-      {
-      targets: 0,
-      "width": "25%"
-      },
-      {
-      targets: 1,
-      "width": "5%"
-      },
-      {
-      targets: 2,
-      "width": "5%"
-      },
-      {
-      targets: 3,
-      "width": "10%"
-      },
-      {
-      targets: 4,
-      "width": "10%"
-      },
-      {
-      targets: 5
-      },
-      {
-      targets: 6
-      }
-    ],
-    "initComplete": function(settings) {
+  if (scoresTable == undefined) {
+    scoresTable = $(tableID).DataTable({
+      "data": fullFinishedScores["scores"],
+      autoWidth: false,
+      searching: true,
+      stateSave: true,
+      "pageLength": 25,
+      "lengthMenu": [
+        [10, 25, 50, -1],
+        [10, 25, 50, "All"]
+      ],
+      "order": [
+        [5, "desc"]
+      ],
+      "columns": [{
+        "data": "name"
+      }, {
+        "data": "firstReportDate_position"
+      }, {
+        "data": "secondReportDate_position"
+      }, {
+        "data": "firstReportDate_score"
+      }, {
+        "data": "secondReportDate_score"
+      }, {
+        "data": "score_points_delta"
+      }, {
+        "data": "score_percentage_delta"
+      }],
+      columnDefs: [{
+          targets: 0,
+          "width": "25%"
+        },
+        {
+          targets: 1,
+          "width": "5%"
+        },
+        {
+          targets: 2,
+          "width": "5%"
+        },
+        {
+          targets: 3,
+          "width": "10%"
+        },
+        {
+          targets: 4,
+          "width": "10%"
+        },
+        {
+          targets: 5
+        },
+        {
+          targets: 6
+        }
+      ],
+      "initComplete": function(settings) {
         //saveUsersChildStates();
         //reloadUsersTable();
         $(tableID).attr("style", "width: 100%");
-    }
+      }
     });
-
-
+  } else {
+    scoresTable.clear().rows.add(fullFinishedScores["scores"]).draw();
+  }
+  showReportsLoaded();
 }
-function getReports(config, firstMostRecentReportDate, previousWeekReportDate){
-  var req_get_firstMostRecentReportDate = new XMLHttpRequest();
-  req_get_firstMostRecentReportDate.onreadystatechange = function() {
+
+function setReports(selectedScoreType, firstReportDate, secondReportDate) {
+  var req_get_firstReportDate = new XMLHttpRequest();
+  req_get_firstReportDate.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      var firstMostRecentReportJson = JSON.parse(req_get_firstMostRecentReportDate.responseText);
+      var firstMostRecentReportJson = JSON.parse(req_get_firstReportDate.responseText);
       console.log(firstMostRecentReportJson);
-      var req_get_previousWeekReportDate = new XMLHttpRequest();
-      req_get_previousWeekReportDate.onreadystatechange = function() {
+      var req_get_secondReportDate = new XMLHttpRequest();
+      req_get_secondReportDate.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          var previousWeekReportJson = JSON.parse(req_get_previousWeekReportDate.responseText);
+          var previousWeekReportJson = JSON.parse(req_get_secondReportDate.responseText);
           console.log(previousWeekReportJson);
           drawTable(firstMostRecentReportJson, previousWeekReportJson);
         }
       };
-      req_get_previousWeekReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + previousWeekReportDate + ".json", true);
-      req_get_previousWeekReportDate.send();
+      req_get_secondReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + selectedScoreType + "_" + secondReportDate + ".json", true);
+      req_get_secondReportDate.send();
     }
   };
-  req_get_firstMostRecentReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + firstMostRecentReportDate + ".json", true);
-  req_get_firstMostRecentReportDate.send();
+  req_get_firstReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + selectedScoreType + "_"  + firstReportDate + ".json", true);
+  req_get_firstReportDate.send();
 }
-window.onload = function(){
+
+function prependCero(number) {
+  var repsonseStr;
+  if (number < 10) {
+    repsonseStr = "0" + String(number);
+  } else {
+    repsonseStr = String(number);
+  }
+  return repsonseStr;
+}
+
+function getReadableDate(unixTime) {
+  var date = new Date(unixTime * 1000);
+  var dateFormat = String((date.getYear() + 1900) + "/" + prependCero(date.getMonth() + 1) + "/" + prependCero(date.getDate()) + " - " + prependCero(date.getHours()) + ":" + prependCero(date.getMinutes()) /* + ":" + date.getSeconds()*/ );
+  return dateFormat;
+}
+
+function loadSelects(reports) {
+  console.log(reports)
+  var scoreTypeSelect = document.getElementById("scoreTypeSelect")
+  var selectedScoreType = scoreTypeSelect.options[scoreTypeSelect.selectedIndex].value;
+  var reportsSelect1 = document.getElementById("reportsSelect1");
+  var reportsSelect2 = document.getElementById("reportsSelect2");
+  //clear selects
+  reportsSelect1.innerHTML = "";
+  reportsSelect2.innerHTML = "";
+  for (var index = reports[selectedScoreType]["times"].length - 1; index >= 0; index--) {
+    var reportsSelect1_option = document.createElement("option");
+    var reportsSelect2_option = document.createElement("option");
+    reportsSelect1_option.text = getReadableDate(reports[selectedScoreType]["times"][index]);
+    reportsSelect1_option.value = reports[selectedScoreType]["times"][index];
+    reportsSelect2_option.text = getReadableDate(reports[selectedScoreType]["times"][index]);
+    reportsSelect2_option.value = reports[selectedScoreType]["times"][index];
+    reportsSelect1.add(reportsSelect1_option);
+    reportsSelect2.add(reportsSelect2_option);
+  }
+}
+
+
+window.onload = function() {
+  document.getElementById("loadReports").addEventListener("click", function() {
+    showReportsLoading();
+    var scoreTypeSelect = document.getElementById("scoreTypeSelect")
+    var selectedScoreType = scoreTypeSelect.options[scoreTypeSelect.selectedIndex].value;
+    var reportsSelect1 = document.getElementById("reportsSelect1");
+    var reportsSelect2 = document.getElementById("reportsSelect2");
+    var firstReportID = reportsSelect1.options[reportsSelect1.selectedIndex].value;
+    var secondReportID = reportsSelect2.options[reportsSelect2.selectedIndex].value;
+    console.log("firstReportID: " + firstReportID)
+    console.log("secondReportID: " + secondReportID)
+    setReports(selectedScoreType, firstReportID, secondReportID);
+
+
+
+
+  });
+  document.getElementById("scoreTypeSelect").addEventListener("change", function() {
+    loadSelects(reports);
+  });
+
   var req_get_config = new XMLHttpRequest();
   req_get_config.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      var config = JSON.parse(req_get_config.responseText);
+      config = JSON.parse(req_get_config.responseText);
 
 
       //get register
       var req_get_register = new XMLHttpRequest();
       req_get_register.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          var responseJson = JSON.parse(req_get_register.responseText);
-          console.log(responseJson)
-          var firstMostRecentReportStr = responseJson["times"][responseJson["times"].length - 1];
-          var previousWeekReportStr = responseJson["times"][responseJson["times"].length - 2];
-          var firstMostRecentReportDate = new Date(responseJson["times"][responseJson["times"].length - 1] * 1000);
-          var previousWeekReportDate = new Date(responseJson["times"][responseJson["times"].length - 2] * 1000);
-          document.getElementById("firstMostRecentReportDate").textContent = firstMostRecentReportDate;
-          document.getElementById("previousWeekReportDate").textContent = previousWeekReportDate;
-
-          getReports(config, firstMostRecentReportStr, previousWeekReportStr);
+          reports = JSON.parse(req_get_register.responseText);
+          loadSelects(reports);
         }
       };
-      req_get_register.open("GET","/" + config["dataPath"] + config["registerFilePath"], true);
+      req_get_register.open("GET", "/" + config["dataPath"] + config["registerFilePath"], true);
       req_get_register.send();
     }
   };

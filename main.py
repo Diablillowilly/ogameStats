@@ -6,6 +6,31 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 import os
 
+"""
+:category
+	1 - Player
+	2 - Alliance
+:type
+	0 - Total
+	1 - Economy
+	2 - Research
+	3 - Military
+	4 - Military Lost
+	5 - Military Built
+	6 - Military Destoyed
+	7 - Honor
+"""
+scoreTypes = ["total", "economy", "research", "military", "militaryLost", "militaryBuilt", "militaryDestroyed", "honor"]
+scoreIDs = {
+    "total": 0,
+    "economy": 1,
+    "research": 2,
+    "military": 3,
+    "militaryLost": 4,
+    "militaryBuilt": 5,
+    "militaryDestroyed": 6,
+    "honor": 7
+}
 
 def loadConfig():
     configFilePath = "html/config.json"
@@ -54,7 +79,9 @@ def loadRegister():
     registerFile = Path(config["webPath"] + config["dataPath"] + config["registerFilePath"])
     if(registerFile.is_file() == False):
         sampleRegister = {}
-        sampleRegister["times"] = []
+        for scoreType in scoreTypes:
+            sampleRegister[scoreType] = {}
+            sampleRegister[scoreType]["times"] = []
         registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "w")
         registerFile.write(json.dumps(sampleRegister, indent=2))
         registerFile.close()
@@ -131,9 +158,19 @@ req_get_alliance = requests.get("https://s{}-{}.ogame.gameforge.com/api/alliance
 players = getPlayersFromAlliance(req_get_alliance.content, config["alliance"])
 
 
-req_get_scores = requests.get("https://s{}-{}.ogame.gameforge.com/api/highscore.xml?category=1&type=0".format(config["server"], config["language"]))
+# get all 8 types of scores
 
-alliancePlayersScores = getPlayersScores(req_get_scores.content, players)
+allScores = {}
+
+for scoreType in scoreTypes:
+    scores = requests.get("https://s{}-{}.ogame.gameforge.com/api/highscore.xml?category=1&type={}".format(config["server"], config["language"], scoreIDs[scoreType]))
+    allScores[scoreType] = getPlayersScores(scores.content, players)
+
+
+
+
+
+
 
 req_get_players = requests.get("https://s{}-{}.ogame.gameforge.com/api/players.xml".format(config["server"], config["language"]))
 
@@ -143,13 +180,18 @@ playersNames = getPlayersNames(req_get_players.content)
 # crossData, generate json from alliance with current scores of players with each players names
 
 alliancePlayers = {}
-alliancePlayers["timestamp"] = alliancePlayersScores["timestamp"]
 alliancePlayers["scores"] = {}
-for playerID in players:
-    alliancePlayers["scores"][playerID] = {}
-    alliancePlayers["scores"][playerID]["position"] = alliancePlayersScores["scores"][playerID]["position"]
-    alliancePlayers["scores"][playerID]["score"] = alliancePlayersScores["scores"][playerID]["score"]
-    alliancePlayers["scores"][playerID]["name"] = playersNames[playerID]["name"]
+
+for scoreType in scoreTypes:
+    alliancePlayers["scores"][scoreType] = {}
+    alliancePlayers["scores"][scoreType]["timestamp"] = allScores[scoreType]["timestamp"]
+    alliancePlayers["scores"][scoreType]["players"] = {}
+
+    for playerID in players:
+        alliancePlayers["scores"][scoreType]["players"][playerID] = {}
+        alliancePlayers["scores"][scoreType]["players"][playerID]["name"] = playersNames[playerID]["name"]
+        alliancePlayers["scores"][scoreType]["players"][playerID]["position"] = allScores[scoreType]["scores"][playerID]["position"]
+        alliancePlayers["scores"][scoreType]["players"][playerID]["score"] = allScores[scoreType]["scores"][playerID]["score"]
 
 
 
@@ -161,22 +203,26 @@ registerFile.close()
 register = json.loads(registerFileContent)
 
 #if time does not exist add it
-timeAlreadyExists = False
-for time in register["times"]:
-    if(time == alliancePlayers["timestamp"]):
-        timeAlreadyExists = True
+for scoreType in scoreTypes:
 
-if(timeAlreadyExists == False):
-    register["times"].append(alliancePlayers["timestamp"])
+    timeAlreadyExists = False
+    for time in register[scoreType]["times"]:
+        if(time == alliancePlayers["scores"][scoreType]["timestamp"]):
+            timeAlreadyExists = True
+
+    if(timeAlreadyExists == False):
+        register[scoreType]["times"].append(alliancePlayers["scores"][scoreType]["timestamp"])
 
 registerFile = open(config["webPath"] + config["dataPath"] + config["registerFilePath"], "w")
 registerFile.write(json.dumps(register, indent=2))
 registerFile.close()
 
+for scoreType in scoreTypes:
+    print(scoreType)
+    alliancePlayersReportFileName = config["webPath"] + config["dataPath"] + config["reportFilesPath"] + scoreType + "_" +  alliancePlayers["scores"][scoreType]["timestamp"] + ".json"
+    f = open(alliancePlayersReportFileName, "w")
+    f.write(json.dumps(alliancePlayers["scores"][scoreType], indent=2))
+    f.close()
 
-alliancePlayersReportFileName = config["webPath"] + config["dataPath"] + config["reportFilesPath"] + alliancePlayers["timestamp"] + ".json"
-f = open(alliancePlayersReportFileName, "w")
-f.write(json.dumps(alliancePlayers, indent=2))
-f.close()
 
 print("done!")

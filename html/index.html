@@ -28,19 +28,53 @@
     <h1 class="text-center">MAF STATS</h1>
   </header>
   <hr>
-  <div id="info" class="d-flex flex-column">
-    <span>Fecha del reporte mas reciente: <span id="firstMostRecentReportDate" class="font-weight-bold"></span></span>
-    <span>Fecha del segundo reporte mas reciente: <span id="previousWeekReportDate" class="font-weight-bold"></span></span>
+  <div id="info" class="d-flex flex-column justify-content-center w-100">
+    <span>Fecha del reporte mas reciente: <span id="firstReportDate" class="font-weight-bold"></span></span>
+    <span>Fecha del segundo reporte mas reciente: <span id="secondReportDate" class="font-weight-bold"></span></span>
   </div>
+  <div id="selectors" class="d-flex flex-column w-100 mt-5">
+    <div class="row w-100">
+      <div class="d-flex flex-column col-12 mb-3">
+        <label for="scoreTypeSelect">Tipo de puntuacion</label>
+        <select id="scoreTypeSelect" class="form-control">
+          <option value="total" selected>Total</option>
+          <option value="economy">Economia</option>
+          <option value="research">Investigacion</option>
+          <option value="military">Militar</option>
+          <option value="militaryLost">Puntos militares perdidos</option>
+          <option value="militaryBuilt">Puntos militares construidos</option>
+          <option value="militaryDestroyed">Puntos militares destruidos</option>
+          <option value="honor">Honor</option>
+        </select>
+      </div>
+      <div class="d-flex flex-column col-6">
+        <label for="reportsSelect1">Primer reporte</label>
+        <select id="reportsSelect1" class="form-control">
+        </select>
+      </div>
+      <div class="d-flex flex-column col-6">
+        <label for="reportsSelect2">Segundo reporte</label>
+        <select id="reportsSelect2" class="form-control">
+        </select>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center mt-3 w-100">
+      <button id="loadReports" type="button" class="btn btn-primary d-flex justify-content-center align-items-center">Cargar reportes
+        <div class="spinner-border spinner-border-sm text-light mt-1 ml-2 d-none" role="status">
+          <span class="sr-only">Loading...</span>
+        </div></button>
+    </div>
+  </div>
+
   <div class="w-100 mt-5">
     <table id="scoresTable" class="table table-striped table-borderless my-5 hover">
       <thead class="thead-light">
         <tr>
           <th scope="col">Jugador</th>
-          <th scope="col">Clasificacion actual</th>
-          <th scope="col">Clasificacion previa</th>
-          <th scope="col">Puntuacion actual</th>
-          <th scope="col">Puntuacion previa</th>
+          <th scope="col">Clasificacion reporte 1</th>
+          <th scope="col">Clasificacion reporte 2</th>
+          <th scope="col">Puntuacion reporte 1</th>
+          <th scope="col">Puntuacion reporte 2</th>
           <th scope="col">Diferencia de puntos</th>
           <th scope="col">Diferencia porcentual</th>
         </tr>

@@ -1,21 +1,26 @@
-console.log("test")
 var configPath = "/config.json"
 var config;
 var reports;
 var scoresTable = undefined;
 
-function showReportsLoading() {
+var underDevelopment = false;
 
+function showReportsLoading() {
+  document.getElementById("loadReportsStatus").classList.remove("fa-check");
+  document.getElementById("loadReportsStatus").classList.add("fa-spinner");
+  document.getElementById("loadReportsStatus").classList.add("fa-spin");
 }
 
 function showReportsLoaded() {
-
+  document.getElementById("loadReportsStatus").classList.add("fa-check");
+  document.getElementById("loadReportsStatus").classList.remove("fa-spinner");
+  document.getElementById("loadReportsStatus").classList.remove("fa-spin");
 }
 
 function drawTable(firstReportDate, secondReportDate) {
-  console.log("drawTable")
-  console.log(firstReportDate)
-  console.log(secondReportDate)
+  //console.log("drawTable")
+  //console.log(firstReportDate)
+  //console.log(secondReportDate)
   var fullFinishedScores = {};
   fullFinishedScores["firstReportDate"] = firstReportDate["timestamp"];
   fullFinishedScores["secondReportDate"] = secondReportDate["timestamp"];
@@ -24,9 +29,9 @@ function drawTable(firstReportDate, secondReportDate) {
     var playerData = {}
     var firstReportDate_player = firstReportDate["players"][player]
     var secondReportDate_player = secondReportDate["players"][player]
-    console.log("playerData")
-    console.log(firstReportDate_player)
-    console.log(secondReportDate_player)
+    //console.log("playerData")
+    //console.log(firstReportDate_player)
+    //console.log(secondReportDate_player)
     playerData["name"] = firstReportDate_player.name
     playerData["firstReportDate_position"] = firstReportDate_player.position
     playerData["secondReportDate_position"] = secondReportDate_player.position
@@ -37,7 +42,7 @@ function drawTable(firstReportDate, secondReportDate) {
     fullFinishedScores["scores"].push(playerData)
 
   }
-  console.log(fullFinishedScores)
+  //console.log(fullFinishedScores)
 
   var tableID = "#scoresTable";
   if (scoresTable == undefined) {
@@ -113,12 +118,12 @@ function setReports(selectedScoreType, firstReportDate, secondReportDate) {
   req_get_firstReportDate.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var firstMostRecentReportJson = JSON.parse(req_get_firstReportDate.responseText);
-      console.log(firstMostRecentReportJson);
+      //console.log(firstMostRecentReportJson);
       var req_get_secondReportDate = new XMLHttpRequest();
       req_get_secondReportDate.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           var previousWeekReportJson = JSON.parse(req_get_secondReportDate.responseText);
-          console.log(previousWeekReportJson);
+          //console.log(previousWeekReportJson);
           drawTable(firstMostRecentReportJson, previousWeekReportJson);
         }
       };
@@ -126,7 +131,7 @@ function setReports(selectedScoreType, firstReportDate, secondReportDate) {
       req_get_secondReportDate.send();
     }
   };
-  req_get_firstReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + selectedScoreType + "_"  + firstReportDate + ".json", true);
+  req_get_firstReportDate.open("GET", "/" + config["dataPath"] + config["reportFilesPath"] + selectedScoreType + "_" + firstReportDate + ".json", true);
   req_get_firstReportDate.send();
 }
 
@@ -147,7 +152,7 @@ function getReadableDate(unixTime) {
 }
 
 function loadSelects(reports) {
-  console.log(reports)
+  //console.log(reports)
   var scoreTypeSelect = document.getElementById("scoreTypeSelect")
   var selectedScoreType = scoreTypeSelect.options[scoreTypeSelect.selectedIndex].value;
   var reportsSelect1 = document.getElementById("reportsSelect1");
@@ -169,6 +174,13 @@ function loadSelects(reports) {
 
 
 window.onload = function() {
+  if (underDevelopment == true) {
+    document.getElementById("notice").textContent = "EN DESARROLLO";
+    document.getElementById("noticeDesc").textContent = "Es posible que la pagina no funcione correctamente mientras puedas leer este mensaje, probablemente este haciendo mantenimiento, en un rato deberia de estar funcionado otra vez";
+
+  }
+
+
   document.getElementById("loadReports").addEventListener("click", function() {
     showReportsLoading();
     var scoreTypeSelect = document.getElementById("scoreTypeSelect")
@@ -177,8 +189,11 @@ window.onload = function() {
     var reportsSelect2 = document.getElementById("reportsSelect2");
     var firstReportID = reportsSelect1.options[reportsSelect1.selectedIndex].value;
     var secondReportID = reportsSelect2.options[reportsSelect2.selectedIndex].value;
-    console.log("firstReportID: " + firstReportID)
-    console.log("secondReportID: " + secondReportID)
+    //console.log("firstReportID: " + firstReportID)
+    //console.log("secondReportID: " + secondReportID)
+
+    document.getElementById("firstReportDate").textContent = getReadableDate(firstReportID);
+    document.getElementById("secondReportDate").textContent = getReadableDate(secondReportID);
     setReports(selectedScoreType, firstReportID, secondReportID);
 
 

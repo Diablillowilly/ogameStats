@@ -41,13 +41,16 @@ def loadConfig():
 	configFile = Path(configFilePath)
 	if(configFile.is_file() == False):
 		sampleConfig = {
-			"alliance":"1",
-			"server":"1",
-			"language":"en",
-			"registerFilePath":"register.json",
-			"reportFilesPath":"reports/",
-			"dataPath":"data/",
-			"webPath":"html/"
+		  "alliance": 1,
+		  "server": 1,
+		  "language":"en",
+		  "galaxyCount": 9,
+		  "solarSystemCount": 499,
+		  "numberCount": 15,
+		  "webPath":"html/",
+		  "registerFilePath":"register.json",
+		  "dataPath":"data/",
+		  "reportFilesPath":"reports/"
 		}
 		configFile = open(configFilePath, "w")
 		configFile.write(json.dumps(sampleConfig, indent=2))

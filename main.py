@@ -104,7 +104,7 @@ def getPlayersFromAlliance(allianceXML, allianceID): # alliances xml string, and
 	allianceXML_parsed = ET.fromstring(allianceXML)
 	players = []
 	for alliance in allianceXML_parsed:
-		if(alliance.attrib["id"] == allianceID):
+		if(int(alliance.attrib["id"]) == allianceID):
 			for player in alliance:
 				players.append(player.attrib["id"])
 	return players

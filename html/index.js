@@ -28,13 +28,15 @@ function drawTable(firstReportDate, secondReportDate) {
   for (const player in firstReportDate["players"]) {
     var playerData = {}
     var firstReportDate_player = firstReportDate["players"][player]
-    var secondReportDate_player = secondReportDate["players"][player]
+    var secondReportDate_player = secondReportDate["players"][player] == undefined ? -1 : secondReportDate["players"][player]
     //console.log("playerData")
     //console.log(firstReportDate_player)
     //console.log(secondReportDate_player)
     playerData["name"] = firstReportDate_player.name
     playerData["firstReportDate_position"] = firstReportDate_player.position
-    playerData["secondReportDate_position"] = secondReportDate_player.position
+
+    playerData["secondReportDate_position"] = secondReportDate_player.position == undefined ? -1 : secondReportDate_player.position;
+
     playerData["firstReportDate_score"] = firstReportDate_player.score
     playerData["secondReportDate_score"] = secondReportDate_player.score
     playerData["score_points_delta"] = parseInt(secondReportDate_player.score) - parseInt(firstReportDate_player.score)
@@ -175,7 +177,7 @@ function loadSelects(reports) {
 
 window.onload = function() {
   if (underDevelopment == true) {
-    document.getElementById("notice").textContent = "EN DESARROLLO";
+    document.getElementById("notice").textContent = "EN MANTENIMIENTO";
     document.getElementById("noticeDesc").textContent = "Es posible que la pagina no funcione correctamente mientras puedas leer este mensaje, probablemente este haciendo mantenimiento, en un rato deberia de estar funcionado otra vez";
 
   }

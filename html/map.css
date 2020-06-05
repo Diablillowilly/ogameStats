@@ -1,0 +1,43 @@
+.minMapHeight {
+  min-height: 85vh;
+}
+
+#galaxySquareMap rect{
+  margin-top: 10px;
+    margin-bottom: 10px;
+}
+#galaxySquareMapLabels{
+  width: 7%; /* leftSize*/
+}
+.above_GalaxySquareMapLabels{
+  height: 2rem;
+  top: -2rem;
+  width: 93%; /* 100 - leftSize*/
+  margin-left: 7%; /* leftSize*/
+}
+.under_GalaxySquareMapLabels{
+  height: 2rem;
+  bottom: -2rem;
+  width: 93%; /* 100 - leftSize*/
+  margin-left: 7%; /* leftSize*/
+}
+.mapSvg {
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+.mapLabels {
+  top: 0;
+  left: 0;
+}
+.mapLabelsRight {
+  top: 0;
+  right: 0;
+}
+.hoverGalaxy:hover {
+  stroke-opacity: 0.75;
+  opacity: 0.75;
+}
+.XhoverPlanet:hover {
+  stroke: red !important;
+}

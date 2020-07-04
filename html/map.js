@@ -370,7 +370,7 @@ function getUniverseData(calledFromInnerRequest = false) {
   if (universeJson != undefined && playersJson != undefined) {
     //draw circleGalaxyRender
     if (Object.keys(universeJson).length != Object.keys(playersJson).length) {
-      alert("Object.keys(universeJson).length != Object.keys(playersJson).length");
+      console.log("Object.keys(universeJson).length != Object.keys(playersJson).length");
     }
     alliancePlayers = {}
     for (const player in playersJson) {

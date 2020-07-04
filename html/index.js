@@ -38,7 +38,7 @@ function drawTable(firstReportDate, secondReportDate) {
     playerData["secondReportDate_position"] = secondReportDate_player.position == undefined ? -1 : secondReportDate_player.position;
 
     playerData["firstReportDate_score"] = firstReportDate_player.score
-    playerData["secondReportDate_score"] = secondReportDate_player.score
+    playerData["secondReportDate_score"] = secondReportDate_player.score == undefined ? -1 : secondReportDate_player.score;
     playerData["score_points_delta"] = parseInt(secondReportDate_player.score) - parseInt(firstReportDate_player.score)
     playerData["score_percentage_delta"] = Math.round((playerData["score_points_delta"] / parseInt(firstReportDate_player.score)) * 100)
     fullFinishedScores["scores"].push(playerData)
